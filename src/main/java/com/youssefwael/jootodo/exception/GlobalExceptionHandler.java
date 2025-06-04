@@ -12,7 +12,6 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
@@ -81,6 +80,7 @@ public class GlobalExceptionHandler {
             MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
         log.error("Method argument type mismatch: {}", ex.getMessage());
 
+        assert ex.getRequiredType() != null;
         String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s",
                 ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName());
 
