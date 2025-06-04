@@ -1,10 +1,8 @@
 package com.youssefwael.jootodo.controller;
 
-import com.youssefwael.jootodo.dto.TodoRequestDto;
 import com.youssefwael.jootodo.dto.TodoResponseDto;
 import com.youssefwael.jootodo.dto.UserResponseDto;
 import com.youssefwael.jootodo.entity.Todo;
-import com.youssefwael.jootodo.entity.User;
 import com.youssefwael.jootodo.service.TodoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

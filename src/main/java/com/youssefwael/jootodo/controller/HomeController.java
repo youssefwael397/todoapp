@@ -16,13 +16,10 @@ public class HomeController {
     @RequestMapping("/")
     public ResponseEntity<Map<String, Object>> home() {
         System.out.println("Home page of " + appName);
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         response.put("message", "Welcome to " + appName);
         response.put("status", "success");
         return ResponseEntity.ok(response);
     }
 
-    private String getViewName(){
-        return "index.html";
-    }
 }
