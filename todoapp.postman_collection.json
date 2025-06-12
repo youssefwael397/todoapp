@@ -1,0 +1,479 @@
+{
+	"info": {
+		"_postman_id": "c0a710c9-bac3-4742-8699-35350214e1b1",
+		"name": "todoapp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45562434"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "get all users => admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ5NzI1MzI3LCJleHAiOjE3NDk3MzM5Njd9.8XpVz9kSiY1HNbtSLcAm1Tss_LBPN9VfVPSYkvi35tIl9_JOWDA_HdK-clR1iXVxaLBzD0fi9TVwK92A7bIbew",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/users",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id => admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3Mjk5NTQsImV4cCI6MTc0OTczODU5NH0.2h9jyTHrcRbHH_kKm3cQk-uLUQYHCGhTb0jRCY49vipTwB1xUxbAh-STj4cjGpnSkiqdvVlvyTyAf5yLAJ8OFA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MjAwOTcsImV4cCI6MTc0OTcyODczN30.fkl2yJECxjP4i_JD9OfSDSy5uck1Jv3Ni0D0mt1_i09eSxFmtwS-JbU8pZ98la-lH8vph5D4san3rCvyE4QOFg",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseurl}}/users/13",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"users",
+								"13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ5NzI1MzI3LCJleHAiOjE3NDk3MzM5Njd9.8XpVz9kSiY1HNbtSLcAm1Tss_LBPN9VfVPSYkvi35tIl9_JOWDA_HdK-clR1iXVxaLBzD0fi9TVwK92A7bIbew",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/users/10",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"users",
+								"10"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user by id",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzQ5NzI1MzI3LCJleHAiOjE3NDk3MzM5Njd9.8XpVz9kSiY1HNbtSLcAm1Tss_LBPN9VfVPSYkvi35tIl9_JOWDA_HdK-clR1iXVxaLBzD0fi9TVwK92A7bIbew",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"Youssef102201\",\r\n    \"email\": \"youssefwael397@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/users/13",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"users",
+								"13"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "todos",
+			"item": [
+				{
+					"name": "get all todos => admin",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MjkwNzUsImV4cCI6MTc0OTczNzcxNX0.CBbLvsKoXgKPmIYJxAfAICnuEHmxHIQXqbrJ0VZgxdPupTUk43AAD_ogR7-1clmuAp4HBJ9XHGQ2jM_2HXP8SQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/todos",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get my todos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbDEyM0Bxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsMTIzIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MzMzMjAsImV4cCI6MTc0OTc0MTk2MH0.aSLPHtOeJCj6BhKQtrteDWR8ZEzOdXt3eR2XdWs34WMGWJseQdero_MnjolpngkVT9cPXy9Erllej97Xs2jK-g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/todos/my-todos",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos",
+								"my-todos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get todo by id => admin || Owner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MjkwNzUsImV4cCI6MTc0OTczNzcxNX0.CBbLvsKoXgKPmIYJxAfAICnuEHmxHIQXqbrJ0VZgxdPupTUk43AAD_ogR7-1clmuAp4HBJ9XHGQ2jM_2HXP8SQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/todos/1",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "toggle complete todo => admin || Owner",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbDEyM0Bxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsMTIzIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MzMzMjAsImV4cCI6MTc0OTc0MTk2MH0.aSLPHtOeJCj6BhKQtrteDWR8ZEzOdXt3eR2XdWs34WMGWJseQdero_MnjolpngkVT9cPXy9Erllej97Xs2jK-g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseurl}}/todos/3/toggle-complete",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos",
+								"3",
+								"toggle-complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new todo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbDEyM0Bxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsMTIzIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MzMzMjAsImV4cCI6MTc0OTc0MTk2MH0.aSLPHtOeJCj6BhKQtrteDWR8ZEzOdXt3eR2XdWs34WMGWJseQdero_MnjolpngkVT9cPXy9Erllej97Xs2jK-g",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"description\": \"Description\",\r\n        \"title\": \"first Task for new user\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/todos",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update todo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3Mjk5NTQsImV4cCI6MTc0OTczODU5NH0.2h9jyTHrcRbHH_kKm3cQk-uLUQYHCGhTb0jRCY49vipTwB1xUxbAh-STj4cjGpnSkiqdvVlvyTyAf5yLAJ8OFA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"description\": \"Description about Second Task editied\",\r\n        \"title\": \"Second Task editied\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/todos/4",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"todos",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"youssef.wael@qsitint.com\",\r\n    \"password\": \"Youssef102201\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/auth/login",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"Youssef102201\",\r\n    \"confirmPassword\": \"Youssef102201\",\r\n    \"email\": \"youssef.wael@qsitint.com\",\r\n    \"username\": \"Youssef_Wael\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseurl}}/api/auth/register",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "profile",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzUxMiJ9.eyJlbWFpbCI6InlvdXNzZWYud2FlbEBxc2l0aW50LmNvbSIsInVzZXJuYW1lIjoiWW91c3NlZl9XYWVsIiwicm9sZSI6IlVTRVIiLCJpYXQiOjE3NDk3MTkxMzcsImV4cCI6MTc0OTcyNzc3N30.Ll4L5mRRMKiz6TafhGZPuPfvdh7csB_0gYPq2NshmpY6J8QuLkX0ceDb8N2JBYG07G6q3TeolgGVxrAWv3gMKQ",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseurl}}/auth/profile",
+							"host": [
+								"{{baseurl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "home",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "123456789",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "youssef",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseurl}}",
+					"host": [
+						"{{baseurl}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseurl",
+			"value": "http://localhost:2025/api/v1",
+			"type": "string"
+		}
+	]
+}

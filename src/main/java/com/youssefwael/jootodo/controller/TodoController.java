@@ -1,67 +1,132 @@
 package com.youssefwael.jootodo.controller;
 
+import com.youssefwael.jootodo.dto.TodoRequestDto;
 import com.youssefwael.jootodo.dto.TodoResponseDto;
 import com.youssefwael.jootodo.dto.UserResponseDto;
 import com.youssefwael.jootodo.entity.Todo;
 import com.youssefwael.jootodo.service.TodoService;
+import com.youssefwael.jootodo.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/todos")
+@RequestMapping("/todos")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TodoController {
+
     private final TodoService todoService;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @GetMapping
-    public ResponseEntity<List<TodoResponseDto>> getAllTodos(){
-        List<TodoResponseDto> todos = todoService.getAllTodos().stream()
-                .map(this::convertToResponseDto)
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<TodoResponseDto>> getAllTodos() {
+        List<Todo> todos = todoService.getAllTodos();
+        List<TodoResponseDto> dtoList = todos.stream()
+                .map(todo -> modelMapper.map(todo, TodoResponseDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(todos);
+        return ResponseEntity.ok(dtoList);
     }
 
-    private TodoResponseDto convertToResponseDto(Todo todo){
-        TodoResponseDto dto = new TodoResponseDto();
-        dto.setId(todo.getId());
-        dto.setTitle(todo.getTitle());
-        dto.setDescription(todo.getDescription());
-        dto.setCompleted(todo.getCompleted());
-        dto.setCreatedAt(todo.getCreatedAt());
-        dto.setDueDate(todo.getDueDate());
+    @GetMapping("/my-todos")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<List<TodoResponseDto>> getMyTodos(Authentication authentication) {
+        String email = authentication.getName();
+        UserResponseDto currentUser = userService.getUserByEmail(email);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        // Convert user to UserResponseDto
-        UserResponseDto userDto = new UserResponseDto();
-        userDto.setId(todo.getUser().getId());
-        userDto.setUsername(todo.getUser().getUsername());
-        userDto.setEmail(todo.getUser().getEmail());
-        userDto.setRole(todo.getUser().getRole());
-        dto.setUser(userDto);
-
-        return dto;
+        List<Todo> todos = todoService.getTodosByUserId(currentUser.getId());
+        List<TodoResponseDto> dtoList = todos.stream()
+                .map(todo -> modelMapper.map(todo, TodoResponseDto.class))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{todoId}")
-    public ResponseEntity<?> getTodoById(@PathVariable Long todoId){
-        Todo existingTodo = todoService.getTodoById(todoId);
-        if( existingTodo == null){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getTodoById(@PathVariable Long todoId) {
+        Todo todo = todoService.getTodoById(todoId);
+        if (todo == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Todo not found"));
         }
-        return ResponseEntity.ok(convertToResponseDto(todoService.getTodoById(todoId)));
+        TodoResponseDto responseDto = modelMapper.map(todo, TodoResponseDto.class);
+        return ResponseEntity.ok(responseDto);
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> createTodo(@Valid @RequestBody TodoRequestDto todoRequestDto, Authentication authentication) {
+        String email = authentication.getName();
+        UserResponseDto currentUser = userService.getUserByEmail(email);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        Todo todo = modelMapper.map(todoRequestDto, Todo.class);
+        todo.setCompleted(false);
+        todo.setCreatedAt(LocalDateTime.now());
+        
+        Todo savedTodo = todoService.saveTodoForUser(todo, currentUser.getId());
+        TodoResponseDto responseDto = modelMapper.map(savedTodo, TodoResponseDto.class);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @PutMapping("/{todoId}")
+    @PreAuthorize("hasRole('ADMIN') or @todoService.isOwnerByEmail(#todoId, authentication.name)")
+    public ResponseEntity<?> updateTodo(
+            @PathVariable Long todoId,
+            @Valid @RequestBody TodoRequestDto todoRequestDto,
+            Authentication authentication) {
+        Todo updatedTodo = todoService.updateTodo(todoId, todoRequestDto);
+        if (updatedTodo == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TodoResponseDto responseDto = modelMapper.map(updatedTodo, TodoResponseDto.class);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PatchMapping("/{todoId}/toggle-complete")
+    @PreAuthorize("hasRole('ADMIN') or @todoService.isOwnerByEmail(#todoId, authentication.name)")
+    public ResponseEntity<?> toggleTodoCompletion(@PathVariable Long todoId, Authentication authentication) {
+        Todo updatedTodo = todoService.toggleTodoCompletion(todoId);
+        if (updatedTodo == null) {
+            return ResponseEntity.notFound().build();
+        }
+        TodoResponseDto responseDto = modelMapper.map(updatedTodo, TodoResponseDto.class);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{todoId}")
+    @PreAuthorize("hasRole('ADMIN') or @todoService.isOwnerByEmail(#todoId, authentication.name)")
+    public ResponseEntity<?> deleteTodo(@PathVariable Long todoId, Authentication authentication) {
+        boolean deleted = todoService.deleteTodo(todoId);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // Admin-only endpoint to get todos by specific user ID
     @GetMapping("/user/{userId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<TodoResponseDto>> getTodosByUserId(@PathVariable Long userId) {
-        List<TodoResponseDto> todos = todoService.getTodosByUserId(userId).stream()
-                .map(this::convertToResponseDto)
+        List<Todo> todos = todoService.getTodosByUserId(userId);
+        List<TodoResponseDto> dtoList = todos.stream()
+                .map(todo -> modelMapper.map(todo, TodoResponseDto.class))
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(todos);
+        return ResponseEntity.ok(dtoList);
     }
 }
