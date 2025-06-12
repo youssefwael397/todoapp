@@ -1,75 +1,82 @@
 package com.youssefwael.jootodo.controller;
 
-import com.youssefwael.jootodo.dto.UserRequestDto;
 import com.youssefwael.jootodo.dto.UserResponseDto;
 import com.youssefwael.jootodo.dto.UserUpdateDto;
-import com.youssefwael.jootodo.entity.User;
 import com.youssefwael.jootodo.service.UserService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class UserController {
-
+@RequestMapping("/users")
+public class UserController extends BaseController {
     private final UserService userService;
 
-    @GetMapping("/users")
-    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserResponseDto> response = users.stream()
-                .map(this::convertToResponseDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(response);
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("/users/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
+    @GetMapping()
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponseDto>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> getCurrentUserProfile(Authentication authentication) {
+        String email = authentication.getName();
+        UserResponseDto user = userService.getUserByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         }
-        return ResponseEntity.ok(convertToResponseDto(user));
+        return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/auth/register")
-    public ResponseEntity<?> createUser(
-            @Valid @RequestBody UserRequestDto userRequestDto,
-            BindingResult bindingResult) {
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        UserResponseDto user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
+        }
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<?> updateCurrentUser(
+            @Valid @RequestBody UserUpdateDto userUpdateDto,
+            BindingResult bindingResult,
+            Authentication authentication) {
 
         Map<String, String> errors = validateRequest(bindingResult);
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        if (userService.existsByUsername(userRequestDto.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("username", "Username already exists"));
+        String email = authentication.getName();
+        UserResponseDto currentUser = userService.getUserByEmail(email);
+        if (currentUser == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         }
 
-        if (userService.existsByEmail(userRequestDto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("email", "Email already exists"));
-        }
-
-        User user = convertToEntity(userRequestDto);
-        User saved = userService.saveUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(convertToResponseDto(saved));
+        UserResponseDto updated = userService.updateUser(currentUser.getId(), userUpdateDto);
+        return ResponseEntity.ok(updated);
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> updateUser(
             @PathVariable Long id,
-            @Valid @RequestBody UserUpdateDto userRequestDto,
+            @Valid @RequestBody UserUpdateDto userUpdateDto,
             BindingResult bindingResult) {
 
         Map<String, String> errors = validateRequest(bindingResult);
@@ -77,62 +84,20 @@ public class UserController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        User existingUser = userService.getUserById(id);
-        if (existingUser == null) {
+        UserResponseDto updated = userService.updateUser(id, userUpdateDto);
+        if (updated == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         }
-
-        User userWithSameUsername = userService.getUserByUsername(userRequestDto.getUsername());
-        if (userWithSameUsername != null && !userWithSameUsername.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("username", "Username already exists"));
-        }
-
-        User userWithSameEmail = userService.getUserByEmail(userRequestDto.getEmail());
-        if (userWithSameEmail != null && !userWithSameEmail.getId().equals(id)) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("email", "Email already exists"));
-        }
-
-        User updatedUser = userService.saveUser(existingUser);
-        return ResponseEntity.ok(convertToResponseDto(updatedUser));
+        return ResponseEntity.ok(updated);
     }
 
-    @DeleteMapping("/users/{id}")
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
-        }
+        UserResponseDto user = userService.getUserById(id);
+        if (user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
-    }
-
-    // --- Utility Methods ---
-
-    private Map<String, String> validateRequest(BindingResult bindingResult) {
-        Map<String, String> errors = new HashMap<>();
-        bindingResult.getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
-        return errors;
-    }
-
-    private UserResponseDto convertToResponseDto(User user) {
-        UserResponseDto dto = new UserResponseDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
-        return dto;
-    }
-
-    private User convertToEntity(UserRequestDto dto) {
-        User user = new User();
-        user.setUsername(dto.getUsername());
-        user.setEmail(dto.getEmail());
-        user.setPassword(dto.getPassword()); // Make sure to encode it in the service
-        user.setRole(User.Role.USER); // default role
-        return user;
     }
 }

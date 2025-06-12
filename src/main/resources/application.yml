@@ -1,9 +1,10 @@
 spring:
   application:
     name: jootodo
-  security:
-    user:
-      name: youssef
+#  security:
+#    user:
+#      name: youssef
+#      password: 123456789
   web:
     resources:
       add-mappings: false
@@ -22,5 +23,12 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
+
+jwt:
+  secret: 95752a019dbfb0d296a67396ea34f20886e45b72865d645e2563f3dd9c81566a107b77137d3004a56eae625b8e47c6c689f6ed2a84a48573c9dd6e687c61a8867a060e032073683c7b43558b2404b2418ca81aad08cd36ce811cfa0cc736b7a63ecc5ab0cd1aa09bc2bd20c8c358bed3eb2ee88a78b091d17c7d9c5dfc886d172a67852f28ee844fc5d3b0e9cd8b778eed6eef51e117f7948bb3d3052ce0a4c66fae3188ba691ae8e360b563a402f91870b7345cfa7bde05cb45fada9bc11e52b666e4400d5306dc87e926644aaabaa0247afc810b2d550440f7c9e33a338840f056f27e8adf3d5de3699173ccab78626d627da1bd46c5738c6a168a53e9f5de
+  expiration: 8640000
+
 server:
   port: 2025
+  servlet:
+    context-path: /api/v1
