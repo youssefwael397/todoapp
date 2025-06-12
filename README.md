@@ -43,7 +43,7 @@ Create a PostgreSQL database and update the connection details in `src/main/reso
 ### 3. Build and Run
 
 
-The application will start on `http://localhost:8080`
+The application will start on `http://localhost:2025`
 
 ## 🔗 API Endpoints
 
