@@ -81,17 +81,3 @@ The application will start on `http://localhost:8080`
 | `PUT` | `/todos/{id}/complete` | ADMIN/Owner | Toggle completion |
 | `DELETE` | `/todos/{id}` | ADMIN/Owner | Delete todo |
 
-src/
-├── main/
-│   ├── java/com/youssefwael/jootodo/
-│   │   ├── config/          # Configuration classes
-│   │   ├── controller/      # REST controllers
-│   │   ├── dto/            # Data Transfer Objects
-│   │   ├── entity/         # JPA entities
-│   │   ├── exception/      # Exception handling
-│   │   ├── repository/     # Data repositories
-│   │   ├── security/       # Security configurations
-│   │   ├── service/        # Business logic
-│   │   └── util/           # Utility classes
-│   └── resources/
-│       └── application.yml # Application configuration
