@@ -1,12 +1,10 @@
-package com.youssefwael.jootodo.dto;
+package com.youssefwael.jootodo.dto.user;
 
 import com.youssefwael.jootodo.entity.User;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
-public class UserResponseDto {
+public class UserDto {
     private Long id;
     private String username;
     private String email;

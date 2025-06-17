@@ -2,10 +2,10 @@ package com.youssefwael.jootodo.controller;
 
 import com.youssefwael.jootodo.dto.TodoRequestDto;
 import com.youssefwael.jootodo.dto.TodoResponseDto;
-import com.youssefwael.jootodo.dto.UserResponseDto;
+import com.youssefwael.jootodo.dto.user.UserDto;
 import com.youssefwael.jootodo.entity.Todo;
 import com.youssefwael.jootodo.service.TodoService;
-import com.youssefwael.jootodo.service.UserService;
+import com.youssefwael.jootodo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class TodoController {
 
     private final TodoService todoService;
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
     private final ModelMapper modelMapper;
 
     @GetMapping
@@ -43,7 +43,7 @@ public class TodoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<List<TodoResponseDto>> getMyTodos(Authentication authentication) {
         String email = authentication.getName();
-        UserResponseDto currentUser = userService.getUserByEmail(email);
+        UserDto currentUser = userServiceImpl.getUserByEmail(email);
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
@@ -70,7 +70,7 @@ public class TodoController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<?> createTodo(@Valid @RequestBody TodoRequestDto todoRequestDto, Authentication authentication) {
         String email = authentication.getName();
-        UserResponseDto currentUser = userService.getUserByEmail(email);
+        UserDto currentUser = userServiceImpl.getUserByEmail(email);
         if (currentUser == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

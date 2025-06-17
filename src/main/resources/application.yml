@@ -8,6 +8,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/todoapp
@@ -32,3 +35,4 @@ server:
   port: 2025
   servlet:
     context-path: /api/v1
+

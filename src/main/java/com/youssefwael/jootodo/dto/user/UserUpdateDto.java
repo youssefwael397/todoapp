@@ -1,4 +1,4 @@
-package com.youssefwael.jootodo.dto;
+package com.youssefwael.jootodo.dto.user;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

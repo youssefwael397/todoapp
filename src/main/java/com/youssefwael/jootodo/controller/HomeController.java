@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class HomeController extends BaseController {
+public class HomeController {
     @Value("${spring.application.name}")
     private String appName;
 

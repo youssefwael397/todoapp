@@ -1,91 +1,52 @@
 package com.youssefwael.jootodo.controller;
 
-import com.youssefwael.jootodo.dto.AuthResponseDto;
-import com.youssefwael.jootodo.dto.LoginDto;
-import com.youssefwael.jootodo.dto.RegisterRequestDto;
-import com.youssefwael.jootodo.dto.UserResponseDto;
-import com.youssefwael.jootodo.entity.User;
-import com.youssefwael.jootodo.service.UserService;
-import com.youssefwael.jootodo.util.JwtUtil;
+import com.youssefwael.jootodo.dto.auth.LoginReqDto;
+import com.youssefwael.jootodo.dto.auth.LoginResDto;
+import com.youssefwael.jootodo.dto.auth.RegisterReqDto;
+import com.youssefwael.jootodo.dto.auth.RegisterResDto;
+import com.youssefwael.jootodo.dto.user.UserDto;
+import com.youssefwael.jootodo.service.impl.AuthServiceImpl;
+import com.youssefwael.jootodo.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
-import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController extends BaseController {
-    @Autowired
-    private UserService userService;
+@RequiredArgsConstructor
+public class AuthController {
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final UserServiceImpl userServiceImpl;
+    private final AuthServiceImpl authServiceImpl;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDto loginDto, BindingResult bindingResult) {
-        User user = userService.getUserEntityByEmail(loginDto.getEmail());
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-        }
-
-        boolean isAuthenticated = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
-        if (!isAuthenticated) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Invalid credentials"));
-        }
-
-        // Generate JWT token
-        String token = jwtUtil.generateToken(user);
-
-        AuthResponseDto authResponse = new AuthResponseDto(token);
+    public ResponseEntity<LoginResDto> login(@Valid @RequestBody LoginReqDto loginDto) {
+        LoginResDto authResponse = authServiceImpl.authenticate(loginDto);
         return ResponseEntity.ok(authResponse);
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<UserResponseDto> getCurrentUserProfile() {
-        // get the token from the header
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("authentication : " + authentication);
+    public ResponseEntity<UserDto> getCurrentUserProfile(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
-        if (authentication == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-
-        // extract the user's email from the token
         String email = authentication.getName();
+        UserDto user = userServiceImpl.getUserByEmail(email);
 
-        // get the user from the database using the email
-        UserResponseDto user = userService.getUserByEmail(email);
-
-        if(user == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-
-        // send it to the client
-        return ResponseEntity.ok(user);
+        return user != null
+            ? ResponseEntity.ok(user)
+            : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUser(
-            @Valid @RequestBody RegisterRequestDto registerRequestDto) {
+    public ResponseEntity<RegisterResDto> createUser(
+            @Valid @RequestBody RegisterReqDto registerRequestDto) {
 
-        if (userService.existsByUsername(registerRequestDto.getUsername())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("username", "Username already exists"));
-        }
-        if (userService.existsByEmail(registerRequestDto.getEmail())) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("email", "Email already exists"));
-        }
-        UserResponseDto savedUser = userService.registerUser(registerRequestDto);
+        RegisterResDto savedUser = authServiceImpl.registerUser(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
-
-    // ... (other endpoints, you may want to map to DTOs as needed)
 }
